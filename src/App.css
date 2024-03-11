@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+body {
+  background-color: #eeedeb !important;
+}
+.MuiContainer-root {
+  padding-bottom: 20px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px !important;
+  border-radius: 10px;
+}
+button {
+  background-color: #9b27b0 !important;
+}
+.error {
+  padding-top: 10px;
+  color: red;
+}
