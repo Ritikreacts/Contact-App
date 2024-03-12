@@ -8,28 +8,42 @@ import AddContact from "./Pages/AddContact";
 function App() {
   const element = useRoutes([
     {
-      path: "/",
+      path: '/',
       element: <SignIn />,
     },
     {
-      path: "register",
+      path: '/register',
       element: <SignUp />,
+
     },
     {
-      path: "home",
+      path: '/home',
       element: <Home />,
       children: [
         {
-          path: "home/add",
+          path: 'add',
+          element: <AddContact />,
+        },
+        {
+          path: 'view',
+          element: <AddContact />,
+        },
+        {
+          path: 'import',
+          element: <AddContact />,
+        },
+        {
+          path: 'export',
           element: <AddContact />,
         },
       ],
     },
     {
-      path: "*",
-      element: <Error />,
+      path: '*',
+      element: <Error/>,
     },
   ]);
+
   return element;
 }
 

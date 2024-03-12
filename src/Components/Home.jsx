@@ -1,42 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import HomeContent from "../Components/HomeContent";
-import { Outlet, useLocation, useNavigate, useOutlet } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Action from "./Action";
 
-const EmailParser = (data) => {
-  const [email, setEmail] = useState(data);
-  const [username, setUsername] = useState("");
-  useEffect(() => {
-    const match = email.match(/^([A-Za-z]+)/);
-    if (match) {
-      setUsername(match[1]);
-    }
-  }, [email]);
-  return username;
-};
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     if (!sessionStorage.getItem("token")) {
       navigate("/");
     }
   }, []);
 
-  const location = useLocation();
-  if (location.state) {
-    const userDetails = location.state.data;
-    const username = EmailParser(userDetails.email);
+  const userDetails = location.state ? location.state.data : null;
+  const username = userDetails ? userDetails.email.match(/^([A-Za-z]+)/)[1] : null;
 
-    return (
-      <>
-        <Navbar name={username}></Navbar>
-        <Action></Action>
-        <Outlet></Outlet>
-      </>
-    );
-  }
+  return (
+    <>
+      <Navbar name={username}></Navbar>
+      <Action></Action>
+      <Outlet></Outlet>
+    </>
+  );
 };
 
 export default Home;
