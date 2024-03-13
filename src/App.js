@@ -4,43 +4,48 @@ import { useRoutes } from "react-router-dom";
 import Home from "./Components/Home";
 import Error from "./Components/Error";
 import AddContact from "./Pages/AddContact";
+import Welcome from "./Components/Welcome";
+import ViewContact from "./Pages/ViewContact";
 
 function App() {
   const element = useRoutes([
     {
-      path: '/',
+      path: "/",
       element: <SignIn />,
     },
     {
-      path: '/register',
+      path: "/register",
       element: <SignUp />,
-
     },
     {
-      path: '/home',
+      path: "/home",
       element: <Home />,
       children: [
         {
-          path: 'add',
+          path: "",
+          element: <Welcome />,
+        },
+        {
+          path: "add",
           element: <AddContact />,
         },
         {
-          path: 'view',
+          path: "view",
+          element: <ViewContact />,
+        },
+        {
+          path: "import",
           element: <AddContact />,
         },
         {
-          path: 'import',
-          element: <AddContact />,
-        },
-        {
-          path: 'export',
+          path: "export",
           element: <AddContact />,
         },
       ],
     },
     {
-      path: '*',
-      element: <Error/>,
+      path: "*",
+      element: <Error />,
     },
   ]);
 

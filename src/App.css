@@ -64,7 +64,7 @@ button {
   width: 40%;
   /* height: 100%; */
 }
-.container {
+.new-container {
   /* width: 100%; */
   /* background-color: #1976d2; */
   display: flex;
@@ -73,14 +73,14 @@ button {
   gap: 10%;
   padding: 20px;
 }
-.container a {
+.new-container a {
   font-weight: 600;
-  border: 1px solid white;
+  border: 1px solid transparent;
   padding: 10px;
   text-decoration: none;
   color: rgb(0, 0, 0);
   border-radius: 10px;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.514);
 }
 .button-new {
   text-transform: capitalize !important;
@@ -88,6 +88,24 @@ button {
   background-color: #282c34 !important;
 }
 .active {
-  background-color: red !important;
+  background-color: rgb(49, 43, 43) !important;
   color: #fff !important;
+}
+.home-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.home-content img {
+  max-width: 50%;
+  mix-blend-mode: multiply;
+}
+.add-contact {
+  background-color: #282c34 !important;
+}
+.contact-form {
+  margin: 20px !important;
+}
+.add-contact-cancel {
+  background-color: rgb(199, 9, 9) !important;
 }

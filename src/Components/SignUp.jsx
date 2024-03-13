@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useId } from "react";
 import Snackbar from "./Snackbar";
 import { useNavigate } from "react-router-dom";
 
@@ -35,27 +35,30 @@ function Copyright(props) {
     </Typography>
   );
 }
-let encodedString;
+let encodedPassword;
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const userId = useId();
+  console.log(userId);
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
 
   function encrypt(data) {
     console.log("data to encrypt-", data.password);
     const baseString = data.password;
-    encodedString = window.btoa(baseString);
-    console.log("after encryption -", encodedString);
-    return encodedString;
+    encodedPassword = window.btoa(baseString);
+    console.log("after encryption -", encodedPassword);
+    return encodedPassword;
   }
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const formData = Object.keys(data)
       .filter((objKey) => objKey !== "passwordConfirm")
       .reduce((newObj, key) => {
@@ -66,6 +69,7 @@ export default function SignUp() {
     console.log(formData.password);
     formData.password = encrypt(data);
     const encryptedData = { ...formData };
+    encryptedData.userId = userId;
     if (JSON.parse(localStorage.getItem("users")) !== null) {
       const users = JSON.parse(localStorage.getItem("users"));
       users.push(encryptedData);
@@ -181,8 +185,9 @@ export default function SignUp() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
+                  disabled={isSubmitting}
                 >
-                  Sign Up
+                  {isSubmitting ? "Loading..." : "Sign Up"}
                 </Button>
                 <Grid container justifyContent="flex-end">
                   <Grid item>

@@ -4,12 +4,21 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-export default function ButtonAppBar(props) {
+export default function ButtonAppBar() {
+  const location = useLocation();
   const navigate = useNavigate();
+  const activeUserId =
+    sessionStorage.getItem("activeUserId") !== null
+      ? sessionStorage.getItem("activeUserId")
+      : null;
+
+  const dataBase = JSON.parse(localStorage.getItem("users"));
+  const username = dataBase.find((obj) => obj.userId === activeUserId);
+  const activeUser = username.email.match(/^([A-Za-z]+)/)[1];
   function userLoggedOut() {
-    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("activeUserId");
     navigate("/");
   }
   return (
@@ -17,7 +26,7 @@ export default function ButtonAppBar(props) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-            Hello! {props.name || "name"}
+            Hello! {activeUser || "name"}
           </Typography>
           <Button
             color="inherit"

@@ -15,9 +15,9 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import Home from "./Home";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Snackbar from "./Snackbar";
+import Snackbar from "../Components/Snackbar";
 
 function Copyright(props) {
   return (
@@ -36,28 +36,38 @@ function Copyright(props) {
     </Typography>
   );
 }
-let encodedString;
+let encodedPassword;
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRedirected, setIsRedirected] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const signUpStatus = location.state ? location.state.isDiverted : null;
+    if (signUpStatus) {
+      setIsRedirected(true);
+    }
+  }, []);
+
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
 
   function encrypt(data) {
     console.log("data to encrypt-", data.password);
     const baseString = data.password;
-    encodedString = window.btoa(baseString);
-    console.log("after encryption -", encodedString);
-    return encodedString;
+    encodedPassword = window.btoa(baseString);
+    console.log("after encryption -", encodedPassword);
+    return encodedPassword;
   }
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       const formData = data;
       formData.password = encrypt(data);
@@ -66,20 +76,29 @@ export default function SignIn() {
       const users = JSON.parse(localStorage.getItem("users"));
 
       users.forEach((element) => {
-        if (JSON.stringify(element) === JSON.stringify(encryptedData)) {
-          sessionStorage.setItem("token", encryptedData.password);
-          navigate("home", { state: { data: encryptedData } });
-        } else {
-          console.log("invalid credentials");
-          throw new Error();
+        const objectToCompare = Object.keys(element)
+          .filter((objKey) => objKey !== "userId")
+          .reduce((newObj, key) => {
+            newObj[key] = data[key];
+            return newObj;
+          }, {});
+        console.log(objectToCompare);
+
+        if (JSON.stringify(objectToCompare) === JSON.stringify(encryptedData)) {
+          sessionStorage.setItem("activeUserId", element.userId);
+          navigate("home");
         }
       });
+      console.log(encryptedData);
+      console.log("invalid credentials");
+      throw new Error();
     } catch (error) {
       setError("root", {
         message: "No user found with this email or password",
       });
     }
   };
+
   return (
     <>
       <ThemeProvider theme={defaultTheme}>
@@ -148,8 +167,9 @@ export default function SignIn() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                disabled={isSubmitting}
               >
-                Sign In
+                {isSubmitting ? "Loading..." : "Sign In"}
               </Button>
               {errors.root && (
                 <div className="error">{errors.root.message}</div>
