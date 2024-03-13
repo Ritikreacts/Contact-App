@@ -109,3 +109,6 @@ button {
 .add-contact-cancel {
   background-color: rgb(199, 9, 9) !important;
 }
+.btn-action{
+  background-color: transparent!important;
+}

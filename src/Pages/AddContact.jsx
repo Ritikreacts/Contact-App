@@ -13,7 +13,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { useState, useEffect, useRef, useId } from "react";
+import { useState, useRef, useId } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Snackbar from "../Components/Snackbar";
 
@@ -24,7 +24,6 @@ export default function AddContact(props) {
   const imageInput = useRef(null);
   const location = useLocation();
   const [image, setImage] = useState("");
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -41,17 +40,32 @@ export default function AddContact(props) {
 
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    data.avatar = image;
-    data.contactId = idGenerated;
-    if (JSON.parse(localStorage.getItem("contacts")) !== null) {
-      const contacts = JSON.parse(localStorage.getItem("contacts"));
+  
+    if (image) {
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = () => {
+        const imageData = reader.result;
+        data.avatar = imageData;
+        data.contactId = idGenerated;
+        const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+        contacts.push(data);
+        localStorage.setItem("contacts", JSON.stringify(contacts));
+        navigate('/home');
+      };
+      reader.onerror = (error) => {
+        console.error("Error converting image to Base64:", error);
+      };
+    } else {
+      data.avatar = "";
+      data.contactId = idGenerated;
+      const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
       contacts.push(data);
       localStorage.setItem("contacts", JSON.stringify(contacts));
-    } else {
-      const contacts = [data];
-      localStorage.setItem("contacts", JSON.stringify(contacts));
+      navigate('/home');
     }
   };
+  
 
   return (
     <>
