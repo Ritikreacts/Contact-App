@@ -26,7 +26,7 @@ export default function ButtonAppBar() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-            Hello! {activeUser || "name"}
+            Hello! <span className="user-name">{activeUser || "name"}</span>
           </Typography>
           <Button
             color="inherit"

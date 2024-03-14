@@ -16,11 +16,11 @@ import { useForm } from "react-hook-form";
 import { useState, useRef, useId } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Snackbar from "../Components/Snackbar";
+import { v4 as uuidv4 } from "uuid";
 
 const defaultTheme = createTheme();
 
 export default function AddContact(props) {
-  const idGenerated = useId();
   const imageInput = useRef(null);
   const location = useLocation();
   const [image, setImage] = useState("");
@@ -40,37 +40,40 @@ export default function AddContact(props) {
 
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-  
+    const activeUserId =
+      sessionStorage.getItem("activeUserId") !== null
+        ? sessionStorage.getItem("activeUserId")
+        : null;
+
     if (image) {
       const reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onload = () => {
         const imageData = reader.result;
         data.avatar = imageData;
-        data.contactId = idGenerated;
-        const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+        data.contactId = uuidv4();
+        const contacts = JSON.parse(localStorage.getItem([activeUserId])) || [];
         contacts.push(data);
-        localStorage.setItem("contacts", JSON.stringify(contacts));
-        navigate('/home');
+        localStorage.setItem([activeUserId], JSON.stringify(contacts));
+        navigate("/home/view");
       };
       reader.onerror = (error) => {
         console.error("Error converting image to Base64:", error);
       };
     } else {
       data.avatar = "";
-      data.contactId = idGenerated;
-      const contacts = JSON.parse(localStorage.getItem("contacts")) || [];
+      data.contactId = uuidv4();
+      const contacts = JSON.parse(localStorage.getItem([activeUserId])) || [];
       contacts.push(data);
-      localStorage.setItem("contacts", JSON.stringify(contacts));
-      navigate('/home');
+      localStorage.setItem([activeUserId], JSON.stringify(contacts));
+      navigate("/home/view");
     }
   };
-  
 
   return (
     <>
       <ThemeProvider theme={defaultTheme}>
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="xs" className="full-box">
           <CssBaseline />
           <Box
             className="contact-form"
@@ -181,7 +184,7 @@ export default function AddContact(props) {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={isSubmitting}
+                // disabled={isSubmitting}
               >
                 {isSubmitting ? "Adding..." : "Add Contact"}
               </Button>
@@ -195,9 +198,9 @@ export default function AddContact(props) {
                 variant="contained"
                 sx={{ mb: 2 }}
                 onClick={() => {
-                  navigate(-1);
+                  navigate("/home");
                 }}
-                disabled={isSubmitting}
+                // disabled={isSubmitting}
               >
                 Back
               </Button>

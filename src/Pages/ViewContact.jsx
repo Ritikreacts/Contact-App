@@ -11,6 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate, Outlet } from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -38,10 +39,15 @@ function createData(avatar, name, email, number, contactId) {
 }
 
 export default function CustomizedTables() {
+  const navigate = useNavigate();
+  const activeUserId =
+    sessionStorage.getItem("activeUserId") !== null
+      ? sessionStorage.getItem("activeUserId")
+      : null;
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("contacts")) || [];
+    const storedData = JSON.parse(localStorage.getItem([activeUserId])) || [];
     setRows(
       storedData.map((row) =>
         createData(
@@ -65,7 +71,7 @@ export default function CustomizedTables() {
   }, []);
 
   const updateTable = () => {
-    const storedData = JSON.parse(localStorage.getItem("contacts")) || [];
+    const storedData = JSON.parse(localStorage.getItem([activeUserId])) || [];
     setRows(
       storedData.map((row) =>
         createData(
@@ -86,50 +92,58 @@ export default function CustomizedTables() {
   const handleDelete = (contactId) => {
     const updatedRows = rows.filter((row) => row.contactId !== contactId);
     setRows(updatedRows);
-    localStorage.setItem("contacts", JSON.stringify(updatedRows));
+    localStorage.setItem([activeUserId], JSON.stringify(updatedRows));
+  };
+  const handleEdit = (contactId) => {
+    navigate("/home/edit", {
+      state: contactId,
+    });
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 600 }} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Avatar</StyledTableCell>
-            <StyledTableCell align="center">Name</StyledTableCell>
-            <StyledTableCell align="center">Email</StyledTableCell>
-            <StyledTableCell align="center">Number</StyledTableCell>
-            <StyledTableCell align="center">Action</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={row.contactId}>
-              <StyledTableCell component="th" scope="row">
-                {row.avatar}
-              </StyledTableCell>
-              <StyledTableCell align="center">{row.name}</StyledTableCell>
-              <StyledTableCell align="center">{row.email}</StyledTableCell>
-              <StyledTableCell align="center">{row.number}</StyledTableCell>
-              <StyledTableCell align="center">
-                <IconButton
-                  className="btn-action"
-                  aria-label="edit"
-                  // onClick={() => handleEdit(row.contactId)}
-                >
-                  <EditIcon style={{ color: "green" }} />
-                </IconButton>
-                <IconButton
-                  className="btn-action"
-                  aria-label="delete"
-                  onClick={() => handleDelete(row.contactId)}
-                >
-                  <DeleteIcon style={{ color: "red" }} />
-                </IconButton>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <Outlet></Outlet>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 600 }} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Avatar</StyledTableCell>
+              <StyledTableCell align="center">Name</StyledTableCell>
+              <StyledTableCell align="center">Email</StyledTableCell>
+              <StyledTableCell align="center">Number</StyledTableCell>
+              <StyledTableCell align="center">Action</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <StyledTableRow key={row.contactId}>
+                <StyledTableCell className="avatar" component="th" scope="row">
+                  {row.avatar}
+                </StyledTableCell>
+                <StyledTableCell align="center">{row.name}</StyledTableCell>
+                <StyledTableCell align="center">{row.email}</StyledTableCell>
+                <StyledTableCell align="center">{row.number}</StyledTableCell>
+                <StyledTableCell align="center">
+                  <IconButton
+                    className="btn-action"
+                    aria-label="edit"
+                    onClick={() => handleEdit(row.contactId)}
+                  >
+                    <EditIcon style={{ color: "green" }} />
+                  </IconButton>
+                  <IconButton
+                    className="btn-action"
+                    aria-label="delete"
+                    onClick={() => handleDelete(row.contactId)}
+                  >
+                    <DeleteIcon style={{ color: "red" }} />
+                  </IconButton>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

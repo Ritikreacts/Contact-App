@@ -60,37 +60,29 @@ export default function SignIn() {
   } = useForm();
 
   function encrypt(data) {
-    console.log("data to encrypt-", data.password);
     const baseString = data.password;
     encodedPassword = window.btoa(baseString);
-    console.log("after encryption -", encodedPassword);
     return encodedPassword;
   }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
-      const formData = data;
+      const formData = { ...data };
       formData.password = encrypt(data);
       const encryptedData = { ...formData };
-      console.log(encryptedData);
+      console.log("encryptedData", encryptedData);
       const users = JSON.parse(localStorage.getItem("users"));
+      console.log(users);
 
       users.forEach((element) => {
-        const objectToCompare = Object.keys(element)
-          .filter((objKey) => objKey !== "userId")
-          .reduce((newObj, key) => {
-            newObj[key] = data[key];
-            return newObj;
-          }, {});
-        console.log(objectToCompare);
-
-        if (JSON.stringify(objectToCompare) === JSON.stringify(encryptedData)) {
+        if (
+          element.email === encryptedData.email &&
+          element.password === encryptedData.password
+        ) {
           sessionStorage.setItem("activeUserId", element.userId);
           navigate("home");
         }
       });
-      console.log(encryptedData);
-      console.log("invalid credentials");
       throw new Error();
     } catch (error) {
       setError("root", {
@@ -167,7 +159,7 @@ export default function SignIn() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={isSubmitting}
+                // disabled={isSubmitting}
               >
                 {isSubmitting ? "Loading..." : "Sign In"}
               </Button>

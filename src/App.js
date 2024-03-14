@@ -6,6 +6,7 @@ import Error from "./Components/Error";
 import AddContact from "./Pages/AddContact";
 import Welcome from "./Components/Welcome";
 import ViewContact from "./Pages/ViewContact";
+import EditContact from "./Pages/EditContact";
 
 function App() {
   const element = useRoutes([
@@ -38,8 +39,8 @@ function App() {
           element: <AddContact />,
         },
         {
-          path: "export",
-          element: <AddContact />,
+          path: "edit",
+          element: <EditContact />,
         },
       ],
     },

@@ -14,9 +14,10 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { useState, useId } from "react";
+import { useState } from "react";
 import Snackbar from "./Snackbar";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 function Copyright(props) {
   return (
@@ -40,8 +41,6 @@ let encodedPassword;
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const userId = useId();
-  console.log(userId);
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const {
@@ -69,7 +68,8 @@ export default function SignUp() {
     console.log(formData.password);
     formData.password = encrypt(data);
     const encryptedData = { ...formData };
-    encryptedData.userId = userId;
+    encryptedData.userId = uuidv4();
+    console.log("user Id stored in sign up-", encryptedData.userId);
     if (JSON.parse(localStorage.getItem("users")) !== null) {
       const users = JSON.parse(localStorage.getItem("users"));
       users.push(encryptedData);
@@ -185,7 +185,7 @@ export default function SignUp() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  disabled={isSubmitting}
+                  // disabled={isSubmitting}
                 >
                   {isSubmitting ? "Loading..." : "Sign Up"}
                 </Button>

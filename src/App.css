@@ -109,6 +109,48 @@ button {
 .add-contact-cancel {
   background-color: rgb(199, 9, 9) !important;
 }
-.btn-action{
-  background-color: transparent!important;
+.btn-action {
+  background-color: transparent !important;
+}
+.avatar {
+  /* width: 100%; */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.user-name {
+  font-weight: 600;
+  color: white;
+  font-family: sans-serif;
+  color: white;
+  text-transform: capitalize;
+  text-shadow: 0 0 3px #000000, 0 0 3px #000000;
+}
+.full-box {
+  margin-bottom: 20px !important;
+}
+.back-btn {
+  /* background-color: #bdbdbd !important; */
+  /* padding: 5px; */
+}
+.export,
+.import {
+  width: 100% !important;
+  background-color: white !important;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500 !important;
+  border: none !important;
+}
+.export-btn,
+.import-btn {
+  width: 100% !important;
+  cursor: pointer;
+  border-radius: 10px;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+}
+.export-btn button {
+  background-color: white !important;
+  outline: none !important;
 }
