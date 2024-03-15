@@ -3,9 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-// import Link from "@mui/material/Link";
 import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -14,10 +11,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import Home from "./Home";
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Snackbar from "../Components/Snackbar";
+import { useNavigate } from "react-router-dom";
+import { getUsersInStorage, setSession } from "../Services/Storage";
 
 function Copyright(props) {
   return (
@@ -40,18 +35,7 @@ let encodedPassword;
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const location = useLocation();
-  const [isRedirected, setIsRedirected] = useState(false);
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const signUpStatus = location.state ? location.state.isDiverted : null;
-    if (signUpStatus) {
-      setIsRedirected(true);
-    }
-  }, []);
-
   const {
     register,
     handleSubmit,
@@ -71,7 +55,7 @@ export default function SignIn() {
       formData.password = encrypt(data);
       const encryptedData = { ...formData };
       console.log("encryptedData", encryptedData);
-      const users = JSON.parse(localStorage.getItem("users"));
+      const users = getUsersInStorage();
       console.log(users);
 
       users.forEach((element) => {
@@ -79,7 +63,7 @@ export default function SignIn() {
           element.email === encryptedData.email &&
           element.password === encryptedData.password
         ) {
-          sessionStorage.setItem("activeUserId", element.userId);
+          setSession(element.userId);
           navigate("home");
         }
       });
@@ -159,7 +143,7 @@ export default function SignIn() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                // disabled={isSubmitting}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? "Loading..." : "Sign In"}
               </Button>

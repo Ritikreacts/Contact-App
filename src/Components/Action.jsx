@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useCSVReader, useCSVDownloader } from "react-papaparse"; // Import useCSVReader from react-papaparse
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 const Action = () => {
@@ -15,26 +15,6 @@ const Action = () => {
     splitLocation[1] === "home" && splitLocation[2] === "import";
   const activeExport =
     splitLocation[1] === "home" && splitLocation[2] === "export";
-
-  const handleImport = (data) => {
-    setImportedData(data);
-    // Update your local storage with imported data
-    localStorage.setItem("importedData", JSON.stringify(data));
-  };
-
-  const Import = () => {
-    const { openDialog } = useCSVReader({
-      onFileLoaded: handleImport,
-    });
-
-    return (
-      <div className="import">
-        <button className="import-btn" onClick={openDialog}>
-          Import
-        </button>
-      </div>
-    );
-  };
 
   const Export = () => {
     const { CSVDownloader, Type } = useCSVDownloader();
@@ -63,15 +43,60 @@ const Action = () => {
     <div className="new-container">
       <NavLink
         to={{ pathname: "/home/add", state: importedData }}
-        className={activeAdd ? "active" : ""}
+        className={activeAdd ? "active border-1" : "border-1"}
       >
         Add Contact
       </NavLink>
-      <NavLink to="/home/view" className={activeView ? "active" : ""}>
-        View Contact
+      <NavLink
+        to="/home/view"
+        className={activeView ? "active border-1" : "border-1"}
+      >
+        Contacts
       </NavLink>
-      <NavLink>{Import}</NavLink>
-      <NavLink>{Export()}</NavLink>
+      <NavLink
+        to="/home/import"
+        className={activeView ? "border-1" : "import-export"}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={21}
+          height={22}
+          id="download"
+        >
+          <g
+            fill="none"
+            fillRule="evenodd"
+            stroke="#000"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+          >
+            <path d="M1 16v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3M6 11l4 4 4-4M10 1v14" />
+          </g>
+        </svg>
+        Import
+      </NavLink>
+      <Link className="import-export">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={20}
+          height={22}
+          id="upload"
+        >
+          <g
+            fill="none"
+            fillRule="evenodd"
+            stroke="#000"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+          >
+            <path d="M1 16v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3M14 5l-4-4-4 4M10 1v14" />
+          </g>
+        </svg>
+
+        {Export()}
+      </Link>
     </div>
   );
 };

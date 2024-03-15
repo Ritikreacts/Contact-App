@@ -12,6 +12,14 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate, Outlet } from "react-router-dom";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
+import {
+  getSession,
+  getContactInStorage,
+  setContactInStorage,
+} from "../Services/Storage";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,15 +47,15 @@ function createData(avatar, name, email, number, contactId) {
 }
 
 export default function CustomizedTables() {
+  const [open, setOpen] = useState(false);
+  const vertical = "top";
+  const horizontal = "right";
   const navigate = useNavigate();
-  const activeUserId =
-    sessionStorage.getItem("activeUserId") !== null
-      ? sessionStorage.getItem("activeUserId")
-      : null;
+  const activeUserId = getSession();
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem([activeUserId])) || [];
+    const storedData = getContactInStorage([activeUserId]);
     setRows(
       storedData.map((row) =>
         createData(
@@ -71,7 +79,7 @@ export default function CustomizedTables() {
   }, []);
 
   const updateTable = () => {
-    const storedData = JSON.parse(localStorage.getItem([activeUserId])) || [];
+    const storedData = getContactInStorage([activeUserId]);
     setRows(
       storedData.map((row) =>
         createData(
@@ -92,16 +100,38 @@ export default function CustomizedTables() {
   const handleDelete = (contactId) => {
     const updatedRows = rows.filter((row) => row.contactId !== contactId);
     setRows(updatedRows);
-    localStorage.setItem([activeUserId], JSON.stringify(updatedRows));
+    setContactInStorage([activeUserId], updatedRows);
+    setOpen(true);
   };
   const handleEdit = (contactId) => {
     navigate("/home/edit", {
       state: contactId,
     });
   };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
 
   return (
     <>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Contact Deleted Successful!
+        </Alert>
+      </Snackbar>
       <Outlet></Outlet>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 600 }} aria-label="customized table">

@@ -1,13 +1,10 @@
 import React, { useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import Action from "./Action";
+import Action from "../Components/Action";
 
 const Home = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const userDetails = location.state ? location.state.data : null;
-  const dataToSend = userDetails;
 
   useEffect(() => {
     if (!sessionStorage.getItem("activeUserId")) {
@@ -18,7 +15,7 @@ const Home = () => {
   return (
     <>
       <Navbar></Navbar>
-      <Action data={dataToSend}></Action>
+      <Action></Action>
       <Outlet></Outlet>
     </>
   );

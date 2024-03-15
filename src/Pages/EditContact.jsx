@@ -3,21 +3,23 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { Link } from "react-router-dom";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { useState, useRef, useId } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Snackbar from "../Components/Snackbar";
 import { styled } from "@mui/material/styles";
 import { NavLink } from "react-router-dom";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
+import {
+  getSession,
+  getContactInStorage,
+  setContactInStorage,
+} from "../Services/Storage";
 
 const defaultTheme = createTheme();
 const Div = styled("div")(({ theme }) => ({
@@ -41,23 +43,22 @@ function TypographyTheme() {
   );
 }
 
-export default function AddContact(props) {
-  const activeUserId =
-    sessionStorage.getItem("activeUserId") !== null
-      ? sessionStorage.getItem("activeUserId")
-      : null;
+export default function EditContact() {
+  const [open, setOpen] = useState(false);
+  const vertical = "top";
+  const horizontal = "right";
+  const activeUserId = getSession();
   const imageInput = useRef(null);
   const location = useLocation();
   const [image, setImage] = useState("");
   const contactId = location.state ? location.state : null;
-  const contacts = JSON.parse(localStorage.getItem([activeUserId])) || [];
+  const contacts = getContactInStorage([activeUserId]);
   const contactToEdit = contacts.find((obj) => obj.contactId === contactId);
 
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -72,7 +73,9 @@ export default function AddContact(props) {
     console.log(file);
     setImage(file);
   }
-
+  function handleNavigate() {
+    navigate("/home/view");
+  }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const existingData = Object.keys(contactToEdit)
@@ -96,18 +99,18 @@ export default function AddContact(props) {
           existingData.email = data.email;
           existingData.avatar = data.avatar;
           existingData.contactId = contactToEdit.contactId;
-          const contacts =
-            JSON.parse(localStorage.getItem([activeUserId])) || [];
-          console.log(contactToEdit.name);
+          const contacts = getContactInStorage([activeUserId]);
           const indexToUpdate = contacts.findIndex(
             (obj) => obj.contactId === contactToEdit.contactId
           );
           contacts[indexToUpdate] = existingData;
-          localStorage.setItem([activeUserId], JSON.stringify(contacts));
+          setContactInStorage([activeUserId], contacts);
           console.log("existingData", existingData);
           console.log("index", indexToUpdate);
         }
-        navigate("/home/view");
+        setOpen(true);
+        setTimeout(handleNavigate, 1500);
+        // navigate("/home/view");
       };
       reader.onerror = (error) => {
         console.error("Error converting image to Base64:", error);
@@ -119,22 +122,41 @@ export default function AddContact(props) {
         existingData.email = data.email;
         existingData.avatar = contactToEdit.avatar;
         existingData.contactId = contactToEdit.contactId;
-        const contacts = JSON.parse(localStorage.getItem([activeUserId])) || [];
-        console.log(contactToEdit.name);
+        const contacts = getContactInStorage([activeUserId]);
         const indexToUpdate = contacts.findIndex(
           (obj) => obj.contactId === contactToEdit.contactId
         );
         contacts[indexToUpdate] = existingData;
-        localStorage.setItem([activeUserId], JSON.stringify(contacts));
-        console.log("existingData", existingData);
-        console.log("index", indexToUpdate);
+        setContactInStorage([activeUserId], contacts);
       }
-      navigate("/home/view");
+      setOpen(true);
+      setTimeout(handleNavigate, 1500);
     }
   };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
 
   return (
     <>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Changes saved successfully!
+        </Alert>
+      </Snackbar>
       <TypographyTheme />
       <ThemeProvider theme={defaultTheme}>
         <Container component="main" maxWidth="xs" className="full-box">
@@ -244,7 +266,7 @@ export default function AddContact(props) {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                // disabled={isSubmitting}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving..." : "Save changes"}
               </Button>
@@ -260,7 +282,7 @@ export default function AddContact(props) {
                 onClick={() => {
                   navigate("/home/view");
                 }}
-                // disabled={isSubmitting}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>

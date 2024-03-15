@@ -5,10 +5,12 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function ButtonAppBar() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const activeUserId =
     sessionStorage.getItem("activeUserId") !== null
       ? sessionStorage.getItem("activeUserId")
@@ -16,7 +18,7 @@ export default function ButtonAppBar() {
 
   const dataBase = JSON.parse(localStorage.getItem("users"));
   const username = dataBase.find((obj) => obj.userId === activeUserId);
-  const activeUser = username.email.match(/^([A-Za-z]+)/)[1];
+  const activeUser = username ? username.email.match(/^([A-Za-z]+)/)[1] : " ";
   function userLoggedOut() {
     sessionStorage.removeItem("activeUserId");
     navigate("/");

@@ -3,32 +3,35 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { Link } from "react-router-dom";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { useState, useRef, useId } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Snackbar from "../Components/Snackbar";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
+import {
+  getSession,
+  getContactInStorage,
+  setContactInStorage,
+} from "../Services/Storage";
 
 const defaultTheme = createTheme();
 
-export default function AddContact(props) {
+export default function AddContact() {
+  const [open, setOpen] = useState(false);
+  const vertical = "top";
+  const horizontal = "right";
   const imageInput = useRef(null);
-  const location = useLocation();
   const [image, setImage] = useState("");
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -37,13 +40,12 @@ export default function AddContact(props) {
     console.log(file);
     setImage(file);
   }
-
+  function handleNavigate() {
+    navigate("/home/view");
+  }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const activeUserId =
-      sessionStorage.getItem("activeUserId") !== null
-        ? sessionStorage.getItem("activeUserId")
-        : null;
+    const activeUserId = getSession();
 
     if (image) {
       const reader = new FileReader();
@@ -52,26 +54,50 @@ export default function AddContact(props) {
         const imageData = reader.result;
         data.avatar = imageData;
         data.contactId = uuidv4();
-        const contacts = JSON.parse(localStorage.getItem([activeUserId])) || [];
+        const contacts = getContactInStorage([activeUserId]) || [];
         contacts.push(data);
-        localStorage.setItem([activeUserId], JSON.stringify(contacts));
-        navigate("/home/view");
+        setContactInStorage([activeUserId], contacts);
+        // navigate("/home/view");
+        setTimeout(handleNavigate, 1500);
+        setOpen(true);
       };
       reader.onerror = (error) => {
         console.error("Error converting image to Base64:", error);
       };
     } else {
+      setOpen(true);
       data.avatar = "";
       data.contactId = uuidv4();
-      const contacts = JSON.parse(localStorage.getItem([activeUserId])) || [];
+      const contacts = getContactInStorage([activeUserId]) || [];
       contacts.push(data);
-      localStorage.setItem([activeUserId], JSON.stringify(contacts));
-      navigate("/home/view");
+      setContactInStorage([activeUserId], contacts);
+      setTimeout(handleNavigate, 1500);
+      // navigate("/home/view");
     }
   };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
   return (
     <>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Contact added Successfully!
+        </Alert>
+      </Snackbar>
       <ThemeProvider theme={defaultTheme}>
         <Container component="main" maxWidth="xs" className="full-box">
           <CssBaseline />
@@ -184,7 +210,7 @@ export default function AddContact(props) {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                // disabled={isSubmitting}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? "Adding..." : "Add Contact"}
               </Button>
@@ -200,7 +226,7 @@ export default function AddContact(props) {
                 onClick={() => {
                   navigate("/home");
                 }}
-                // disabled={isSubmitting}
+                disabled={isSubmitting}
               >
                 Back
               </Button>

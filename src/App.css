@@ -74,7 +74,7 @@ button {
   padding: 20px;
 }
 .new-container a {
-  font-weight: 600;
+  /* font-weight: 600; */
   border: 1px solid transparent;
   padding: 10px;
   text-decoration: none;
@@ -118,30 +118,11 @@ button {
   align-items: center;
   justify-content: center;
 }
-.user-name {
-  font-weight: 600;
-  color: white;
-  font-family: sans-serif;
-  color: white;
-  text-transform: capitalize;
-  text-shadow: 0 0 3px #000000, 0 0 3px #000000;
-}
+
 .full-box {
   margin-bottom: 20px !important;
 }
-.back-btn {
-  /* background-color: #bdbdbd !important; */
-  /* padding: 5px; */
-}
-.export,
-.import {
-  width: 100% !important;
-  background-color: white !important;
-  justify-content: center;
-  align-items: center;
-  font-weight: 500 !important;
-  border: none !important;
-}
+
 .export-btn,
 .import-btn {
   width: 100% !important;
@@ -153,4 +134,18 @@ button {
 .export-btn button {
   background-color: white !important;
   outline: none !important;
+}
+.border-1 {
+  display: flex;
+  align-items: center;
+  gap: 3px !important;
+  border: 1px solid black !important;
+}
+.import-export {
+  border: 1px solid rgb(0, 0, 0) !important;
+  display: flex;
+  /* background-color: #fff7f7 !important; */
+}
+.csv {
+  color: rgb(47, 73, 158);
 }

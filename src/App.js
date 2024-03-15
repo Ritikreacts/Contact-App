@@ -1,12 +1,13 @@
-import SignUp from "./Components/SignUp";
-import SignIn from "./Components/SignIn";
+import SignUp from "./Pages/SignUp";
+import SignIn from "./Pages/SignIn";
 import { useRoutes } from "react-router-dom";
-import Home from "./Components/Home";
+import Home from "./Pages/Home";
 import Error from "./Components/Error";
 import AddContact from "./Pages/AddContact";
 import Welcome from "./Components/Welcome";
 import ViewContact from "./Pages/ViewContact";
 import EditContact from "./Pages/EditContact";
+import ImportCSV from "./Components/ImportCSV";
 
 function App() {
   const element = useRoutes([
@@ -36,7 +37,7 @@ function App() {
         },
         {
           path: "import",
-          element: <AddContact />,
+          element: <ImportCSV />,
         },
         {
           path: "edit",

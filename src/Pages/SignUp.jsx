@@ -3,9 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-// import Link from "@mui/material/Link";
 import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -15,9 +12,12 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import Snackbar from "./Snackbar";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { setUsersInStorage, getUsersInStorage } from "../Services/Storage";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
 
 function Copyright(props) {
   return (
@@ -28,7 +28,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://ritiksinghrajput.netlify.app/">
+      <Link color="inherit" to="https://ritiksinghrajput.netlify.app/">
         Ritik Singh
       </Link>{" "}
       {new Date().getFullYear()}
@@ -41,6 +41,9 @@ let encodedPassword;
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const [open, setOpen] = useState(false);
+  const vertical = "top";
+  const horizontal = "right";
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const {
@@ -48,12 +51,13 @@ export default function SignUp() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
+  function handleNavigate() {
+    navigate("/");
+  }
 
   function encrypt(data) {
-    console.log("data to encrypt-", data.password);
     const baseString = data.password;
     encodedPassword = window.btoa(baseString);
-    console.log("after encryption -", encodedPassword);
     return encodedPassword;
   }
   const onSubmit = async (data) => {
@@ -65,24 +69,46 @@ export default function SignUp() {
         return newObj;
       }, {});
 
-    console.log(formData.password);
     formData.password = encrypt(data);
     const encryptedData = { ...formData };
     encryptedData.userId = uuidv4();
-    console.log("user Id stored in sign up-", encryptedData.userId);
-    if (JSON.parse(localStorage.getItem("users")) !== null) {
-      const users = JSON.parse(localStorage.getItem("users"));
+    const dataInStorage = getUsersInStorage();
+    if (dataInStorage !== null) {
+      setOpen(true);
+      const users = getUsersInStorage();
       users.push(encryptedData);
-      localStorage.setItem("users", JSON.stringify(users));
-      navigate("/", { state: { isDiverted: true } });
+      setUsersInStorage(users);
+      setTimeout(handleNavigate, 1500);
     } else {
+      setOpen(true);
       const users = [encryptedData];
-      localStorage.setItem("users", JSON.stringify(users));
-      navigate("/", { state: { isDiverted: true } });
+      setUsersInStorage(users);
+      setTimeout(handleNavigate, 1500);
     }
   };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
   return (
     <>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Registration Successful!
+        </Alert>
+      </Snackbar>
       <div className="container">
         <ThemeProvider theme={defaultTheme}>
           <Container component="main" maxWidth="xs">
@@ -185,7 +211,7 @@ export default function SignUp() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  // disabled={isSubmitting}
+                  disabled={isSubmitting}
                 >
                   {isSubmitting ? "Loading..." : "Sign Up"}
                 </Button>
