@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -48,11 +48,13 @@ function createData(avatar, name, email, number, contactId) {
 
 export default function CustomizedTables() {
   const [open, setOpen] = useState(false);
+  const [isTableEmpty, setEmpty] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
   const activeUserId = getSession();
   const [rows, setRows] = useState([]);
+  const tableHeader = useRef(null)
 
   useEffect(() => {
     const storedData = getContactInStorage([activeUserId]);
@@ -71,13 +73,23 @@ export default function CustomizedTables() {
         )
       )
     );
+    updateHeader();
   }, []);
 
   useEffect(() => {
     window.addEventListener("storage", updateTable);
     return () => window.removeEventListener("storage", updateTable);
   }, []);
+  
 
+  function updateHeader(){
+    const contacts = getContactInStorage([activeUserId]);
+    if(contacts === null || contacts.length===0){
+      tableHeader.current.style.display="none"
+      setEmpty(true);
+      
+    }
+  }
   const updateTable = () => {
     const storedData = getContactInStorage([activeUserId]);
     setRows(
@@ -102,6 +114,7 @@ export default function CustomizedTables() {
     setRows(updatedRows);
     setContactInStorage([activeUserId], updatedRows);
     setOpen(true);
+    updateHeader();
   };
   const handleEdit = (contactId) => {
     navigate("/home/edit", {
@@ -109,7 +122,7 @@ export default function CustomizedTables() {
     });
   };
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === "click-away") {
       return;
     }
     setOpen(false);
@@ -118,8 +131,11 @@ export default function CustomizedTables() {
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
-
-  return (
+  if(isTableEmpty){
+    return <h1 style={{textAlign:"center"}}>No contacts saved </h1>
+  }
+  else{
+    return(
     <>
       <Snackbar
         open={open}
@@ -135,7 +151,7 @@ export default function CustomizedTables() {
       <Outlet></Outlet>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 600 }} aria-label="customized table">
-          <TableHead>
+          <TableHead ref={tableHeader} >
             <TableRow>
               <StyledTableCell>Avatar</StyledTableCell>
               <StyledTableCell align="center">Name</StyledTableCell>
@@ -176,4 +192,6 @@ export default function CustomizedTables() {
       </TableContainer>
     </>
   );
+
+  }
 }

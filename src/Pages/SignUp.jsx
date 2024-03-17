@@ -87,7 +87,7 @@ export default function SignUp() {
     }
   };
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === "click-away") {
       return;
     }
     setOpen(false);
