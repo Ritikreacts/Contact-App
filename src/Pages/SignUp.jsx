@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { setUsersInStorage, getUsersInStorage } from "../Services/Storage";
+import { setUsersInStorage, getUsersInStorage } from "../Services/storage";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -41,7 +41,7 @@ let encodedPassword;
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const [open, setOpen] = useState(false);
+  const [openSnackBar, setSnackBarOpen] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
@@ -74,13 +74,13 @@ export default function SignUp() {
     encryptedData.userId = uuidv4();
     const dataInStorage = getUsersInStorage();
     if (dataInStorage !== null) {
-      setOpen(true);
+      setSnackBarOpen(true);
       const users = getUsersInStorage();
       users.push(encryptedData);
       setUsersInStorage(users);
       setTimeout(handleNavigate, 1500);
     } else {
-      setOpen(true);
+      setSnackBarOpen(true);
       const users = [encryptedData];
       setUsersInStorage(users);
       setTimeout(handleNavigate, 1500);
@@ -90,7 +90,7 @@ export default function SignUp() {
     if (reason === "click-away") {
       return;
     }
-    setOpen(false);
+    setSnackBarOpen(false);
   };
 
   function TransitionLeft(props) {
@@ -99,7 +99,7 @@ export default function SignUp() {
   return (
     <>
       <Snackbar
-        open={open}
+        openSnackBar={openSnackBar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}

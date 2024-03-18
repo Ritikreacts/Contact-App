@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -19,7 +19,7 @@ import {
   getSession,
   getContactInStorage,
   setContactInStorage,
-} from "../Services/Storage";
+} from "../Services/storage";
 
 const defaultTheme = createTheme();
 const Div = styled("div")(({ theme }) => ({
@@ -44,7 +44,8 @@ function TypographyTheme() {
 }
 
 export default function EditContact() {
-  const [open, setOpen] = useState(false);
+  const [openSnackBar, setSnackBarOpen] = useState(false);
+  const [searchParam, setSearchParam] = useSearchParams();
   const vertical = "top";
   const horizontal = "right";
   const activeUserId = getSession();
@@ -52,6 +53,7 @@ export default function EditContact() {
   const location = useLocation();
   const [image, setImage] = useState("");
   const contactId = location.state ? location.state : null;
+  setSearchParam(contactId);
   const contacts = getContactInStorage([activeUserId]);
   const contactToEdit = contacts.find((obj) => obj.contactId === contactId);
 
@@ -67,14 +69,13 @@ export default function EditContact() {
       number: contactToEdit.number,
     },
   });
-
   function handleImageChange(e) {
     const file = e.target.files[0];
     console.log(file);
     setImage(file);
   }
   function handleNavigate() {
-    navigate("/home/view");
+    navigate(`/home/view:{searchParam}`);
   }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -108,7 +109,7 @@ export default function EditContact() {
           console.log("existingData", existingData);
           console.log("index", indexToUpdate);
         }
-        setOpen(true);
+        setSnackBarOpen(true);
         setTimeout(handleNavigate, 1500);
         // navigate("/home/view");
       };
@@ -129,15 +130,15 @@ export default function EditContact() {
         contacts[indexToUpdate] = existingData;
         setContactInStorage([activeUserId], contacts);
       }
-      setOpen(true);
+      setSnackBarOpen(true);
       setTimeout(handleNavigate, 1500);
     }
   };
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === "click-away") {
       return;
     }
-    setOpen(false);
+    setSnackBarOpen(false);
   };
 
   function TransitionLeft(props) {
@@ -147,7 +148,7 @@ export default function EditContact() {
   return (
     <>
       <Snackbar
-        open={open}
+        openSnackBar={openSnackBar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}

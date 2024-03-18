@@ -48,7 +48,7 @@ button {
   background-color: #9b27b0 !important;
 }
 .error {
-  padding-top: 10px;
+  padding-top: 0px;
   color: red;
 }
 .error-image {

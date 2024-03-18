@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,7 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -19,7 +19,7 @@ import {
   getSession,
   getContactInStorage,
   setContactInStorage,
-} from "../Services/Storage";
+} from "../Services/storage";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -47,14 +47,14 @@ function createData(avatar, name, email, number, contactId) {
 }
 
 export default function CustomizedTables() {
-  const [open, setOpen] = useState(false);
+  const [openSnackBar, setSnackBarOpen] = useState(false);
   const [isTableEmpty, setEmpty] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
   const activeUserId = getSession();
   const [rows, setRows] = useState([]);
-  const tableHeader = useRef(null)
+  const tableHeader = useRef(null);
 
   useEffect(() => {
     const storedData = getContactInStorage([activeUserId]);
@@ -80,14 +80,12 @@ export default function CustomizedTables() {
     window.addEventListener("storage", updateTable);
     return () => window.removeEventListener("storage", updateTable);
   }, []);
-  
 
-  function updateHeader(){
+  function updateHeader() {
     const contacts = getContactInStorage([activeUserId]);
-    if(contacts === null || contacts.length===0){
-      tableHeader.current.style.display="none"
+    if (contacts === null || contacts.length === 0) {
+      tableHeader.current.style.display = "none";
       setEmpty(true);
-      
     }
   }
   const updateTable = () => {
@@ -113,7 +111,7 @@ export default function CustomizedTables() {
     const updatedRows = rows.filter((row) => row.contactId !== contactId);
     setRows(updatedRows);
     setContactInStorage([activeUserId], updatedRows);
-    setOpen(true);
+    setSnackBarOpen(true);
     updateHeader();
   };
   const handleEdit = (contactId) => {
@@ -125,73 +123,98 @@ export default function CustomizedTables() {
     if (reason === "click-away") {
       return;
     }
-    setOpen(false);
+    setSnackBarOpen(false);
   };
 
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
-  if(isTableEmpty){
-    return <h1 style={{textAlign:"center"}}>No contacts saved </h1>
-  }
-  else{
-    return(
-    <>
-      <Snackbar
-        open={open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        TransitionComponent={TransitionLeft}
-        anchorOrigin={{ vertical, horizontal }}
-      >
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          Contact Deleted Successful!
-        </Alert>
-      </Snackbar>
-      <Outlet></Outlet>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 600 }} aria-label="customized table">
-          <TableHead ref={tableHeader} >
-            <TableRow>
-              <StyledTableCell>Avatar</StyledTableCell>
-              <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center">Email</StyledTableCell>
-              <StyledTableCell align="center">Number</StyledTableCell>
-              <StyledTableCell align="center">Action</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.contactId}>
-                <StyledTableCell className="avatar" component="th" scope="row">
-                  {row.avatar}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.name}</StyledTableCell>
-                <StyledTableCell align="center">{row.email}</StyledTableCell>
-                <StyledTableCell align="center">{row.number}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <IconButton
-                    className="btn-action"
-                    aria-label="edit"
-                    onClick={() => handleEdit(row.contactId)}
+  if (isTableEmpty) {
+    return (
+      <>
+        <Snackbar
+          openSnackBar={openSnackBar}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          TransitionComponent={TransitionLeft}
+          anchorOrigin={{ vertical, horizontal }}
+        >
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Contact Deleted Successful!
+          </Alert>
+        </Snackbar>
+        <h1 style={{ textAlign: "center" }}>No contacts saved </h1>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Snackbar
+          openSnackBar={openSnackBar}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          TransitionComponent={TransitionLeft}
+          anchorOrigin={{ vertical, horizontal }}
+        >
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Contact Deleted Successfully!
+          </Alert>
+        </Snackbar>
+        <Outlet></Outlet>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 600 }} aria-label="customized table">
+            <TableHead ref={tableHeader}>
+              <TableRow>
+                <StyledTableCell>Avatar</StyledTableCell>
+                <StyledTableCell align="center">Name</StyledTableCell>
+                <StyledTableCell align="center">Email</StyledTableCell>
+                <StyledTableCell align="center">Number</StyledTableCell>
+                <StyledTableCell align="center">Action</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <StyledTableRow key={row.contactId}>
+                  <StyledTableCell
+                    className="avatar"
+                    component="th"
+                    scope="row"
                   >
-                    <EditIcon style={{ color: "green" }} />
-                  </IconButton>
-                  <IconButton
-                    className="btn-action"
-                    aria-label="delete"
-                    onClick={() => handleDelete(row.contactId)}
-                  >
-                    <DeleteIcon style={{ color: "red" }} />
-                  </IconButton>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
-  );
-
+                    {row.avatar}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.name}</StyledTableCell>
+                  <StyledTableCell align="center">{row.email}</StyledTableCell>
+                  <StyledTableCell align="center">{row.number}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    <IconButton
+                      className="btn-action"
+                      aria-label="edit"
+                      onClick={() => handleEdit(row.contactId)}
+                    >
+                      <EditIcon style={{ color: "green" }} />
+                    </IconButton>
+                    <IconButton
+                      className="btn-action"
+                      aria-label="delete"
+                      onClick={() => handleDelete(row.contactId)}
+                    >
+                      <DeleteIcon style={{ color: "red" }} />
+                    </IconButton>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
+    );
   }
 }

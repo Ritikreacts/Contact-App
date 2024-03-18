@@ -18,12 +18,12 @@ import {
   getSession,
   getContactInStorage,
   setContactInStorage,
-} from "../Services/Storage";
+} from "../Services/storage";
 
 const defaultTheme = createTheme();
 
 export default function AddContact() {
-  const [open, setOpen] = useState(false);
+  const [openSnackBar, setSnackBarOpen] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const imageInput = useRef(null);
@@ -59,13 +59,13 @@ export default function AddContact() {
         setContactInStorage([activeUserId], contacts);
         // navigate("/home/view");
         setTimeout(handleNavigate, 1500);
-        setOpen(true);
+        setSnackBarOpen(true);
       };
       reader.onerror = (error) => {
         console.error("Error converting image to Base64:", error);
       };
     } else {
-      setOpen(true);
+      setSnackBarOpen(true);
       data.avatar = "";
       data.contactId = uuidv4();
       const contacts = getContactInStorage([activeUserId]) || [];
@@ -79,7 +79,7 @@ export default function AddContact() {
     if (reason === "clickaway") {
       return;
     }
-    setOpen(false);
+    setSnackBarOpen(false);
   };
 
   function TransitionLeft(props) {
@@ -88,7 +88,7 @@ export default function AddContact() {
   return (
     <>
       <Snackbar
-        open={open}
+        openSnackBar={openSnackBar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}

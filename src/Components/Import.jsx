@@ -46,10 +46,6 @@ const CSVFileReader = () => {
     return data;
   };
 
-  const storeDataInLocalStorage = (data) => {
-    localStorage.setItem("csvData", JSON.stringify(data));
-  };
-
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };

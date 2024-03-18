@@ -1,23 +1,24 @@
-import React ,{useState}from "react";
+import React, { useState } from "react";
 import Papa from "papaparse";
 import { useNavigate } from "react-router-dom";
-import { getContactInStorage, setContactInStorage } from "../Services/Storage";
+import {
+  getContactInStorage,
+  getSession,
+  setContactInStorage,
+} from "../Services/storage";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 
 export default function ImportCSV() {
-  const [open, setOpen] = useState(false);
+  const [openSnackBar, setSnackBarOpen] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
-  const activeUserId =
-    sessionStorage.getItem("activeUserId") !== null
-      ? sessionStorage.getItem("activeUserId")
-      : null;
-      function handleNavigate() {
-        navigate("/home/view");
-      }
+  const activeUserId = getSession();
+  function handleNavigate() {
+    navigate("/home/view");
+  }
   const handleFile = (event) => {
     Papa.parse(event.target.files[0], {
       complete: function (result) {
@@ -37,7 +38,7 @@ export default function ImportCSV() {
           return contacts.push(d);
         });
         setContactInStorage([activeUserId], contacts);
-        setOpen(true);
+        setSnackBarOpen(true);
         setTimeout(handleNavigate, 1500);
         // navigate("/home/view");
       },
@@ -47,17 +48,17 @@ export default function ImportCSV() {
     if (reason === "click-away") {
       return;
     }
-    setOpen(false);
+    setSnackBarOpen(false);
   };
 
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
-  
+
   return (
     <>
-       <Snackbar
-        open={open}
+      <Snackbar
+        openSnackBar={openSnackBar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
@@ -67,17 +68,17 @@ export default function ImportCSV() {
           File imported Successfully!
         </Alert>
       </Snackbar>
-    <div className="App">
-      <h3>
-        Please upload the <span className="csv">.CSV</span> file to import
-      </h3>
-      <input
-        type="file"
-        name="file"
-        accept=".csv"
-        onChange={handleFile}
-      ></input>
-    </div>
+      <div className="App">
+        <h3>
+          Please upload the <span className="csv">.CSV</span> file to import
+        </h3>
+        <input
+          type="file"
+          name="file"
+          accept=".csv"
+          onChange={handleFile}
+        ></input>
+      </div>
     </>
   );
 }

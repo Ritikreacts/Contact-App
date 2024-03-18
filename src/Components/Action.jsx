@@ -2,6 +2,27 @@ import React, { useState } from "react";
 import { useCSVReader, useCSVDownloader } from "react-papaparse"; // Import useCSVReader from react-papaparse
 import { NavLink, Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { getContactInStorage, getSession } from "../Services/storage";
+
+const Export = () => {
+  const { CSVDownloader, Type } = useCSVDownloader();
+  const activeUserId = getSession();
+  const data = getContactInStorage([activeUserId]) || [];
+  return (
+    <div className="export">
+      <CSVDownloader
+        className="export-btn"
+        type={Type.Button}
+        bom={true}
+        filename={"JSON-TO-CSV"}
+        delimiter={";"}
+        data={data}
+      >
+        Export
+      </CSVDownloader>
+    </div>
+  );
+};
 
 const Action = () => {
   const [importedData, setImportedData] = useState([]);
@@ -15,29 +36,6 @@ const Action = () => {
     splitLocation[1] === "home" && splitLocation[2] === "import";
   const activeExport =
     splitLocation[1] === "home" && splitLocation[2] === "export";
-
-  const Export = () => {
-    const { CSVDownloader, Type } = useCSVDownloader();
-    const activeUserId =
-      sessionStorage.getItem("activeUserId") !== null
-        ? sessionStorage.getItem("activeUserId")
-        : null;
-    const data = JSON.parse(localStorage.getItem(activeUserId)) || [];
-    return (
-      <div className="export">
-        <CSVDownloader
-          className="export-btn"
-          type={Type.Button}
-          bom={true}
-          filename={"JSON-TO-CSV"}
-          delimiter={";"}
-          data={data}
-        >
-          Export
-        </CSVDownloader>
-      </div>
-    );
-  };
 
   return (
     <div className="new-container">
@@ -95,7 +93,7 @@ const Action = () => {
           </g>
         </svg>
 
-        {Export()}
+        {<Export />}
       </Link>
     </div>
   );

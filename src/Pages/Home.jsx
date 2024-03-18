@@ -10,7 +10,7 @@ const Home = () => {
     if (!sessionStorage.getItem("activeUserId")) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <>

@@ -12,7 +12,12 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { getUsersInStorage, setSession } from "../Services/Storage";
+import { getUsersInStorage, setSession } from "../Services/storage";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
+import { useState } from "react";
+import { useEffect } from "react";
 
 function Copyright(props) {
   return (
@@ -23,7 +28,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://ritiksinghrajput.netlify.app/">
+      <Link color="inherit" to="https://ritiksinghrajput.netlify.app/">
         Ritik Singh
       </Link>{" "}
       {new Date().getFullYear()}
@@ -36,6 +41,14 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const navigate = useNavigate();
+  useEffect(() => {
+    if (sessionStorage.getItem("activeUserId")) {
+      navigate("home");
+    }
+  }, [navigate]);
+  const [open, setOpen] = useState(false);
+  const vertical = "top";
+  const horizontal = "right";
   const {
     register,
     handleSubmit,
@@ -43,6 +56,9 @@ export default function SignIn() {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  function handleNavigate() {
+    navigate("home");
+  }
   function encrypt(data) {
     const baseString = data.password;
     encodedPassword = window.btoa(baseString);
@@ -56,32 +72,60 @@ export default function SignIn() {
       const encryptedData = { ...formData };
       console.log("encryptedData", encryptedData);
       const users = getUsersInStorage();
-      console.log(users);
 
-      users.forEach((element) => {
-        if (
-          element.email === encryptedData.email &&
-          element.password === encryptedData.password
-        ) {
+      if (users.length === 0 || users == null) {
+        setError("root", {
+          message: "Email not registered please sign up",
+        });
+      }
+
+      for (let element of users) {
+        if (element.email === encryptedData.email) {
+          if (element.password !== encryptedData.password) {
+            throw new Error();
+          }
           setSession(element.userId);
-          navigate("home");
+          setOpen(true);
+          setTimeout(handleNavigate, 1000);
+          break;
         }
-      });
-      throw new Error();
+      }
     } catch (error) {
       setError("root", {
         message: "No user found with this email or password",
       });
+      console.log(error.message);
     }
   };
+  const handleClose = (event, reason) => {
+    if (reason === "click-away") {
+      return;
+    }
+    setOpen(false);
+  };
 
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
   return (
     <>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Login Successful!
+        </Alert>
+      </Snackbar>
       <ThemeProvider theme={defaultTheme}>
         <Container component="main" maxWidth="xs">
           <CssBaseline />
           <Box
             sx={{
+              marginBottom: 8,
               marginTop: 8,
               display: "flex",
               flexDirection: "column",
@@ -113,12 +157,14 @@ export default function SignIn() {
                 })}
                 margin="normal"
                 fullWidth
+                required
                 id="email"
                 label="Email Address"
                 name="email"
                 autoComplete="email"
                 autoFocus
               />
+              <div></div>
               {errors.email && (
                 <div className="error">{errors.email.message}</div>
               )}
@@ -135,6 +181,7 @@ export default function SignIn() {
                 id="password"
                 autoComplete="current-password"
               />
+              <div></div>
               {errors.password && (
                 <div className="error">{errors.password.message}</div>
               )}
