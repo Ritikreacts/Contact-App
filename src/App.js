@@ -32,7 +32,7 @@ function App() {
           element: <AddContact />,
         },
         {
-          path: "view",
+          path: "contacts",
           element: <ViewContact />,
         },
         {

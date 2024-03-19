@@ -4,30 +4,32 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { getSession, getUsersInStorage } from "../Services/storage";
+import { clearCookie, getCookie, getUsersInStorage } from "../Services/storage";
 
 export default function ButtonAppBar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const activeUserId = getSession();
+  const activeUserId = getCookie();
+  console.log("data in cookie", activeUserId);
 
   const dataBase = getUsersInStorage();
   const username = dataBase.find((obj) => obj.userId === activeUserId);
   const activeUser = username ? username.email.match(/^([A-Za-z]+)/)[1] : "";
   function userLoggedOut() {
-    sessionStorage.removeItem("activeUserId");
+    clearCookie();
     navigate("/");
   }
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          {/* <Link to="/home"></Link> */}
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-            Hello! <span className="user-name">{activeUser || "name"}</span>
+            <Link to="/home" className="home-link">
+              Hello! <span className="user-name">{activeUser || "name"}</span>
+            </Link>
           </Typography>
           <Button
             color="inherit"

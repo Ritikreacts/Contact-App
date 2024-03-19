@@ -8,14 +8,17 @@ export const getUsersInStorage = () => {
   return JSON.parse(localStorage.getItem("users")) || [];
 };
 
-//set session of user
-export const setSession = (userId) => {
-  return sessionStorage.setItem("activeUserId", userId);
+//set cookie of user
+export const setCookie = (userId) => {
+  document.cookie = `activeUserId=${userId}`;
+  return document.cookie;
 };
 
-//get session of user
-export const getSession = () => {
-  return sessionStorage.getItem("activeUserId") || null;
+//get cookie of user
+export const getCookie = () => {
+  const cookieStored = document.cookie;
+  const activeUserId = cookieStored.split("=")[1];
+  return activeUserId || null;
 };
 
 //save contacts of user in localStorage
@@ -26,4 +29,11 @@ export const setContactInStorage = (userId, contact) => {
 //get contacts of user in localStorage
 export const getContactInStorage = (userId) => {
   return JSON.parse(localStorage.getItem(userId)) || [];
+};
+export const clearCookie = () => {
+  document.cookie.split(";").forEach(function (c) {
+    document.cookie = c
+      .replace(/^ +/, "")
+      .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+  });
 };

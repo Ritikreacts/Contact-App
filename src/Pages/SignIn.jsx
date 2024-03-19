@@ -12,7 +12,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { getUsersInStorage, setSession } from "../Services/storage";
+import { getUsersInStorage, setCookie } from "../Services/storage";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -46,7 +46,7 @@ export default function SignIn() {
       navigate("home");
     }
   }, [navigate]);
-  const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const {
@@ -70,7 +70,6 @@ export default function SignIn() {
       const formData = { ...data };
       formData.password = encrypt(data);
       const encryptedData = { ...formData };
-      console.log("encryptedData", encryptedData);
       const users = getUsersInStorage();
 
       if (users.length === 0 || users == null) {
@@ -84,24 +83,27 @@ export default function SignIn() {
           if (element.password !== encryptedData.password) {
             throw new Error();
           }
-          setSession(element.userId);
-          setOpen(true);
+          setCookie(element.userId);
+          setOpenSnackbar((prev) => true);
           setTimeout(handleNavigate, 1000);
-          break;
+          return;
         }
       }
-    } catch (error) {
       setError("root", {
         message: "No user found with this email or password",
       });
-      console.log(error.message);
+    } catch (error) {
+      console.error("Error:", error);
+      setError("root", {
+        message: "Email or password doesn't matched!",
+      });
     }
   };
   const handleClose = (event, reason) => {
     if (reason === "click-away") {
       return;
     }
-    setOpen(false);
+    setOpenSnackbar(false);
   };
 
   function TransitionLeft(props) {
@@ -110,7 +112,7 @@ export default function SignIn() {
   return (
     <>
       <Snackbar
-        open={open}
+        open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
@@ -145,6 +147,7 @@ export default function SignIn() {
               sx={{ mt: 1 }}
             >
               <TextField
+                className="textfield"
                 {...register("email", {
                   required: "Email is required",
                   validate: (value) => {
@@ -169,6 +172,7 @@ export default function SignIn() {
                 <div className="error">{errors.email.message}</div>
               )}
               <TextField
+                className="textfield"
                 {...register("password", {
                   required: "Password is required",
                 })}

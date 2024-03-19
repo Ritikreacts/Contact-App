@@ -2,15 +2,17 @@ import React, { useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Action from "../Components/Action";
+import { getCookie } from "../Services/storage";
 
 const Home = () => {
   const navigate = useNavigate();
+  const isLoggedIn = getCookie();
 
   useEffect(() => {
-    if (!sessionStorage.getItem("activeUserId")) {
+    if (!isLoggedIn) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [isLoggedIn, navigate]);
 
   return (
     <>

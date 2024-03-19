@@ -15,7 +15,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 import {
-  getSession,
+  getCookie,
   getContactInStorage,
   setContactInStorage,
 } from "../Services/storage";
@@ -23,7 +23,7 @@ import {
 const defaultTheme = createTheme();
 
 export default function AddContact() {
-  const [openSnackBar, setSnackBarOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const imageInput = useRef(null);
@@ -41,12 +41,12 @@ export default function AddContact() {
     setImage(file);
   }
   function handleNavigate() {
-    navigate("/home/view");
+    navigate("/home/contacts");
   }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const activeUserId = getSession();
-
+    const activeUserId = getCookie();
+    setOpenSnackbar((prev) => true);
     if (image) {
       const reader = new FileReader();
       reader.readAsDataURL(image);
@@ -57,29 +57,25 @@ export default function AddContact() {
         const contacts = getContactInStorage([activeUserId]) || [];
         contacts.push(data);
         setContactInStorage([activeUserId], contacts);
-        // navigate("/home/view");
         setTimeout(handleNavigate, 1500);
-        setSnackBarOpen(true);
       };
       reader.onerror = (error) => {
         console.error("Error converting image to Base64:", error);
       };
     } else {
-      setSnackBarOpen(true);
       data.avatar = "";
       data.contactId = uuidv4();
       const contacts = getContactInStorage([activeUserId]) || [];
       contacts.push(data);
       setContactInStorage([activeUserId], contacts);
       setTimeout(handleNavigate, 1500);
-      // navigate("/home/view");
     }
   };
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === "click-away") {
       return;
     }
-    setSnackBarOpen(false);
+    setOpenSnackbar(false);
   };
 
   function TransitionLeft(props) {
@@ -88,7 +84,7 @@ export default function AddContact() {
   return (
     <>
       <Snackbar
-        openSnackBar={openSnackBar}
+        open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
@@ -171,7 +167,7 @@ export default function AddContact() {
                 fullWidth
                 required
                 id="email"
-                label="Email  "
+                label="Email"
                 name="email"
               />
               {errors.email && (

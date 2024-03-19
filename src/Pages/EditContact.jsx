@@ -16,7 +16,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 import {
-  getSession,
+  getCookie,
   getContactInStorage,
   setContactInStorage,
 } from "../Services/storage";
@@ -44,16 +44,14 @@ function TypographyTheme() {
 }
 
 export default function EditContact() {
-  const [openSnackBar, setSnackBarOpen] = useState(false);
-  const [searchParam, setSearchParam] = useSearchParams();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
-  const activeUserId = getSession();
+  const activeUserId = getCookie();
   const imageInput = useRef(null);
   const location = useLocation();
   const [image, setImage] = useState("");
   const contactId = location.state ? location.state : null;
-  setSearchParam(contactId);
   const contacts = getContactInStorage([activeUserId]);
   const contactToEdit = contacts.find((obj) => obj.contactId === contactId);
 
@@ -75,10 +73,11 @@ export default function EditContact() {
     setImage(file);
   }
   function handleNavigate() {
-    navigate(`/home/view:{searchParam}`);
+    navigate("/home/contacts");
   }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    setOpenSnackbar((prev) => true);
     const existingData = Object.keys(contactToEdit)
       .filter((objKey) => objKey !== "contactId")
       .reduce((newObj, key) => {
@@ -106,12 +105,8 @@ export default function EditContact() {
           );
           contacts[indexToUpdate] = existingData;
           setContactInStorage([activeUserId], contacts);
-          console.log("existingData", existingData);
-          console.log("index", indexToUpdate);
         }
-        setSnackBarOpen(true);
         setTimeout(handleNavigate, 1500);
-        // navigate("/home/view");
       };
       reader.onerror = (error) => {
         console.error("Error converting image to Base64:", error);
@@ -130,7 +125,6 @@ export default function EditContact() {
         contacts[indexToUpdate] = existingData;
         setContactInStorage([activeUserId], contacts);
       }
-      setSnackBarOpen(true);
       setTimeout(handleNavigate, 1500);
     }
   };
@@ -138,24 +132,23 @@ export default function EditContact() {
     if (reason === "click-away") {
       return;
     }
-    setSnackBarOpen(false);
+    setOpenSnackbar(false);
   };
 
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
-
   return (
     <>
       <Snackbar
-        openSnackBar={openSnackBar}
+        open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
         anchorOrigin={{ vertical, horizontal }}
       >
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          Changes saved successfully!
+          Changes saved Successfully!
         </Alert>
       </Snackbar>
       <TypographyTheme />
@@ -281,7 +274,7 @@ export default function EditContact() {
                 variant="contained"
                 sx={{ mb: 2 }}
                 onClick={() => {
-                  navigate("/home/view");
+                  navigate("/home/contacts");
                 }}
                 disabled={isSubmitting}
               >

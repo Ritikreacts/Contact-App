@@ -11,12 +11,13 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate, Outlet, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
+
 import {
-  getSession,
+  getCookie,
   getContactInStorage,
   setContactInStorage,
 } from "../Services/storage";
@@ -47,12 +48,12 @@ function createData(avatar, name, email, number, contactId) {
 }
 
 export default function CustomizedTables() {
-  const [openSnackBar, setSnackBarOpen] = useState(false);
-  const [isTableEmpty, setEmpty] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
+  const [isTableEmpty, setEmpty] = useState(false);
   const navigate = useNavigate();
-  const activeUserId = getSession();
+  const activeUserId = getCookie();
   const [rows, setRows] = useState([]);
   const tableHeader = useRef(null);
 
@@ -108,22 +109,20 @@ export default function CustomizedTables() {
   };
 
   const handleDelete = (contactId) => {
+    setOpenSnackbar(true);
     const updatedRows = rows.filter((row) => row.contactId !== contactId);
     setRows(updatedRows);
     setContactInStorage([activeUserId], updatedRows);
-    setSnackBarOpen(true);
     updateHeader();
+    setTimeout(() => {
+      setOpenSnackbar(false);
+    }, 2000);
   };
+
   const handleEdit = (contactId) => {
     navigate("/home/edit", {
       state: contactId,
     });
-  };
-  const handleClose = (event, reason) => {
-    if (reason === "click-away") {
-      return;
-    }
-    setSnackBarOpen(false);
   };
 
   function TransitionLeft(props) {
@@ -133,18 +132,18 @@ export default function CustomizedTables() {
     return (
       <>
         <Snackbar
-          openSnackBar={openSnackBar}
-          autoHideDuration={3000}
-          onClose={handleClose}
+          open={openSnackbar}
+          autoHideDuration={2000}
+          // onClose={handleClose}
           TransitionComponent={TransitionLeft}
           anchorOrigin={{ vertical, horizontal }}
         >
           <Alert
-            onClose={handleClose}
+            // onClose={handleClose}
             severity="success"
             sx={{ width: "100%" }}
           >
-            Contact Deleted Successful!
+            Deleted Successfully!
           </Alert>
         </Snackbar>
         <h1 style={{ textAlign: "center" }}>No contacts saved </h1>
@@ -154,21 +153,20 @@ export default function CustomizedTables() {
     return (
       <>
         <Snackbar
-          openSnackBar={openSnackBar}
-          autoHideDuration={3000}
-          onClose={handleClose}
+          open={openSnackbar}
+          autoHideDuration={2000}
+          // onClose={handleClose}
           TransitionComponent={TransitionLeft}
           anchorOrigin={{ vertical, horizontal }}
         >
           <Alert
-            onClose={handleClose}
+            // onClose={handleClose}
             severity="success"
             sx={{ width: "100%" }}
           >
-            Contact Deleted Successfully!
+            Deleted Successfully!
           </Alert>
         </Snackbar>
-        <Outlet></Outlet>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 600 }} aria-label="customized table">
             <TableHead ref={tableHeader}>

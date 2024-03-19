@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useCSVReader, useCSVDownloader } from "react-papaparse"; // Import useCSVReader from react-papaparse
 import { NavLink, Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { getContactInStorage, getSession } from "../Services/storage";
+import { getContactInStorage, getCookie } from "../Services/storage";
 
 const Export = () => {
   const { CSVDownloader, Type } = useCSVDownloader();
-  const activeUserId = getSession();
+  const activeUserId = getCookie();
   const data = getContactInStorage([activeUserId]) || [];
   return (
     <div className="export">
@@ -46,7 +46,7 @@ const Action = () => {
         Add Contact
       </NavLink>
       <NavLink
-        to="/home/view"
+        to="/home/contacts"
         className={activeView ? "active border-1" : "border-1"}
       >
         Contacts

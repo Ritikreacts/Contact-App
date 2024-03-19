@@ -1,25 +1,26 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
 import { useNavigate } from "react-router-dom";
-import {
-  getContactInStorage,
-  getSession,
-  setContactInStorage,
-} from "../Services/storage";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
+import {
+  getContactInStorage,
+  getCookie,
+  setContactInStorage,
+} from "../Services/storage";
 
 export default function ImportCSV() {
-  const [openSnackBar, setSnackBarOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
-  const activeUserId = getSession();
+  const activeUserId = getCookie();
   function handleNavigate() {
-    navigate("/home/view");
+    navigate("/home/contacts");
   }
   const handleFile = (event) => {
+    setOpenSnackbar((prev) => true);
     Papa.parse(event.target.files[0], {
       complete: function (result) {
         const data = [];
@@ -38,9 +39,7 @@ export default function ImportCSV() {
           return contacts.push(d);
         });
         setContactInStorage([activeUserId], contacts);
-        setSnackBarOpen(true);
         setTimeout(handleNavigate, 1500);
-        // navigate("/home/view");
       },
     });
   };
@@ -48,24 +47,23 @@ export default function ImportCSV() {
     if (reason === "click-away") {
       return;
     }
-    setSnackBarOpen(false);
+    setOpenSnackbar(false);
   };
 
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
-
   return (
     <>
       <Snackbar
-        openSnackBar={openSnackBar}
+        open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
         anchorOrigin={{ vertical, horizontal }}
       >
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          File imported Successfully!
+          Contacts imported Successfully!
         </Alert>
       </Snackbar>
       <div className="App">

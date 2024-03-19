@@ -14,10 +14,10 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { setUsersInStorage, getUsersInStorage } from "../Services/storage";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
+import { setUsersInStorage, getUsersInStorage } from "../Services/storage";
 
 function Copyright(props) {
   return (
@@ -41,7 +41,7 @@ let encodedPassword;
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const [openSnackBar, setSnackBarOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const navigate = useNavigate();
@@ -73,14 +73,13 @@ export default function SignUp() {
     const encryptedData = { ...formData };
     encryptedData.userId = uuidv4();
     const dataInStorage = getUsersInStorage();
+    setOpenSnackbar((prev) => true);
     if (dataInStorage !== null) {
-      setSnackBarOpen(true);
       const users = getUsersInStorage();
       users.push(encryptedData);
       setUsersInStorage(users);
       setTimeout(handleNavigate, 1500);
     } else {
-      setSnackBarOpen(true);
       const users = [encryptedData];
       setUsersInStorage(users);
       setTimeout(handleNavigate, 1500);
@@ -90,7 +89,7 @@ export default function SignUp() {
     if (reason === "click-away") {
       return;
     }
-    setSnackBarOpen(false);
+    setOpenSnackbar(false);
   };
 
   function TransitionLeft(props) {
@@ -99,7 +98,7 @@ export default function SignUp() {
   return (
     <>
       <Snackbar
-        openSnackBar={openSnackBar}
+        open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleClose}
         TransitionComponent={TransitionLeft}
@@ -136,6 +135,7 @@ export default function SignUp() {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextField
+                      className="textfield"
                       {...register("email", {
                         required: "Email is required",
                         validate: (value) => {
@@ -159,6 +159,7 @@ export default function SignUp() {
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
+                      className="textfield"
                       {...register("password", {
                         required: "Password is required",
                         validate: (value) => {
@@ -173,6 +174,7 @@ export default function SignUp() {
                       id="password"
                       label="Password"
                       name="password"
+                      type="password"
                       autoComplete="password"
                       onChange={(e) => {
                         setPassword((prev) => e.target.value);
@@ -184,6 +186,7 @@ export default function SignUp() {
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
+                      className="textfield"
                       {...register("passwordConfirm", {
                         required: "Please confirm your Password",
                         validate: (value) => {
@@ -197,7 +200,7 @@ export default function SignUp() {
                       fullWidth
                       name="passwordConfirm"
                       label="Confirm Password"
-                      type="passwordConfirm"
+                      type="password"
                       id="passwordConfirm"
                       autoComplete="given-password"
                     />
