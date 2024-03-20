@@ -66,7 +66,7 @@ export default function ImportCSV() {
           Contacts imported Successfully!
         </Alert>
       </Snackbar>
-      <div className="App">
+      <div className="import-csv-page">
         <h3>
           Please upload the <span className="csv">.CSV</span> file to import
         </h3>

@@ -98,7 +98,9 @@ button {
 }
 .home-content img {
   max-width: 50%;
+  /* min-width: 500px; */
   mix-blend-mode: multiply;
+  filter: grayscale(70%);
 }
 .add-contact {
   background-color: #282c34 !important;
@@ -157,6 +159,16 @@ button {
   min-width: 400px !important;
 }
 
+.image-input {
+  cursor: pointer !important;
+}
+.import-csv-page {
+  text-align: center;
+  margin-bottom: 50px !important;
+}
+.navbar {
+  background-color: #2f353f !important;
+}
 @media screen and (max-width: 628px) {
   .new-container {
     gap: 20px;

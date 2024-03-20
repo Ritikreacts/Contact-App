@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import { NavLink, useSearchParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -31,27 +31,28 @@ const Div = styled("div")(({ theme }) => ({
 function TypographyTheme() {
   return (
     <Div style={{ textAlign: "center", fontWeight: "700" }}>
-      {"Edit Contact"}
+      {" Edit Contact "}
       <NavLink
         style={{ marginLeft: "10%" }}
-        to={{ pathname: "/home/view" }}
+        to={{ pathname: "/home/contacts" }}
         className="back-btn"
       >
-        Back to view contact
+        Back to contacts
       </NavLink>
     </Div>
   );
 }
 
 export default function EditContact() {
+  const param = useParams();
+  const IdInParam = param.id;
+  const contactId = IdInParam;
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
   const activeUserId = getCookie();
   const imageInput = useRef(null);
-  const location = useLocation();
   const [image, setImage] = useState("");
-  const contactId = location.state ? location.state : null;
   const contacts = getContactInStorage([activeUserId]);
   const contactToEdit = contacts.find((obj) => obj.contactId === contactId);
 
@@ -73,7 +74,7 @@ export default function EditContact() {
     setImage(file);
   }
   function handleNavigate() {
-    navigate("/home/contacts");
+    navigate(-1);
   }
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -91,8 +92,6 @@ export default function EditContact() {
       reader.onload = () => {
         const imageData = reader.result;
         data.avatar = imageData;
-        console.log("existing data", existingData);
-        console.log("new data", data);
         if (JSON.stringify(existingData) !== JSON.stringify(data)) {
           existingData.name = data.name;
           existingData.number = data.number;
@@ -165,6 +164,7 @@ export default function EditContact() {
             }}
           >
             <Avatar
+              className="image-input"
               style={{ mixBlendMode: "multiply" }}
               alt="R"
               src={image ? URL.createObjectURL(image) : contactToEdit.avatar}
@@ -221,7 +221,7 @@ export default function EditContact() {
                 fullWidth
                 required
                 id="email"
-                label="Email  "
+                label="Email"
                 name="email"
               />
               {errors.email && (
@@ -248,7 +248,7 @@ export default function EditContact() {
                 fullWidth
                 required
                 id="number"
-                label="Number  "
+                label="Number"
                 name="number"
               />
               {errors.number && (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCSVReader, useCSVDownloader } from "react-papaparse"; // Import useCSVReader from react-papaparse
+import { useCSVReader, useCSVDownloader } from "react-papaparse";
 import { NavLink, Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { getContactInStorage, getCookie } from "../Services/storage";
@@ -32,11 +32,6 @@ const Action = () => {
 
   const activeAdd = splitLocation[1] === "home" && splitLocation[2] === "add";
   const activeView = splitLocation[1] === "home" && splitLocation[2] === "view";
-  const activeImport =
-    splitLocation[1] === "home" && splitLocation[2] === "import";
-  const activeExport =
-    splitLocation[1] === "home" && splitLocation[2] === "export";
-
   return (
     <div className="new-container">
       <NavLink
@@ -52,7 +47,7 @@ const Action = () => {
         Contacts
       </NavLink>
       <NavLink
-        to="/home/import"
+        to="/home/contacts/import"
         className={activeView ? "border-1" : "import-export"}
       >
         <svg

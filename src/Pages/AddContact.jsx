@@ -107,6 +107,7 @@ export default function AddContact() {
             }}
           >
             <Avatar
+              className="image-input"
               style={{ mixBlendMode: "multiply" }}
               alt="R"
               src={
@@ -194,7 +195,7 @@ export default function AddContact() {
                 fullWidth
                 required
                 id="number"
-                label="Number  "
+                label="Number"
                 name="number"
               />
               {errors.number && (
@@ -220,7 +221,7 @@ export default function AddContact() {
                 variant="contained"
                 sx={{ mb: 2 }}
                 onClick={() => {
-                  navigate("/home");
+                  navigate(-1);
                 }}
                 disabled={isSubmitting}
               >

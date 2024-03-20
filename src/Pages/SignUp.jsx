@@ -30,7 +30,7 @@ function Copyright(props) {
       {"Copyright © "}
       <Link color="inherit" to="https://ritiksinghrajput.netlify.app/">
         Ritik Singh
-      </Link>{" "}
+      </Link>
       {new Date().getFullYear()}
       {"."}
     </Typography>

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Navbar from "../Components/Navbar";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Action from "../Components/Action";
 import { getCookie } from "../Services/storage";
 

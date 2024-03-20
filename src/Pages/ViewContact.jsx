@@ -11,7 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -120,9 +120,7 @@ export default function CustomizedTables() {
   };
 
   const handleEdit = (contactId) => {
-    navigate("/home/edit", {
-      state: contactId,
-    });
+    navigate(`edit/${contactId}`);
   };
 
   function TransitionLeft(props) {
@@ -131,6 +129,7 @@ export default function CustomizedTables() {
   if (isTableEmpty) {
     return (
       <>
+        <Outlet />
         <Snackbar
           open={openSnackbar}
           autoHideDuration={2000}
@@ -152,6 +151,7 @@ export default function CustomizedTables() {
   } else {
     return (
       <>
+        <Outlet />
         <Snackbar
           open={openSnackbar}
           autoHideDuration={2000}

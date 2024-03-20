@@ -34,13 +34,23 @@ function App() {
         {
           path: "contacts",
           element: <ViewContact />,
+          // children: [
+          //   {
+          //     path: "import",
+          //     element: <ImportCSV />,
+          //   },
+          //   {
+          //     path: "edit/:id",
+          //     element: <EditContact />,
+          //   },
+          // ],
         },
         {
-          path: "import",
+          path: "contacts/import",
           element: <ImportCSV />,
         },
         {
-          path: "edit",
+          path: "contacts/edit/:id",
           element: <EditContact />,
         },
       ],

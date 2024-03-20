@@ -18,6 +18,7 @@ import Alert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 import { useState } from "react";
 import { useEffect } from "react";
+import { getCookie } from "../Services/storage";
 
 function Copyright(props) {
   return (
@@ -41,11 +42,14 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const isLoggedIn = getCookie();
+
   useEffect(() => {
-    if (sessionStorage.getItem("activeUserId")) {
+    if (isLoggedIn) {
       navigate("home");
     }
-  }, [navigate]);
+  }, [isLoggedIn, navigate]);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const vertical = "top";
   const horizontal = "right";
@@ -164,6 +168,7 @@ export default function SignIn() {
                 id="email"
                 label="Email Address"
                 name="email"
+                type="email"
                 autoComplete="email"
                 autoFocus
               />
