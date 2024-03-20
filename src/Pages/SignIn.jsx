@@ -127,7 +127,7 @@ export default function SignIn() {
         </Alert>
       </Snackbar>
       <ThemeProvider theme={defaultTheme}>
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="xs" className="phone-box">
           <CssBaseline />
           <Box
             sx={{
