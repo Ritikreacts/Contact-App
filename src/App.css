@@ -182,4 +182,8 @@ button {
   .textfield {
     min-width: 50px !important;
   }
+   .phone-box {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
